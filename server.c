@@ -106,7 +106,8 @@ int get_interest_name(const unsigned char *interest_msg,
         struct ccn_charbuf *uri = ccn_charbuf_create();
         ccn_uri_append(uri, name->buf, name->length, 1);
         printf("timestamp %s uri = %s\n", timestamp, ccn_charbuf_as_string(uri));
-    } else {
+    } 
+    else {
         printf("Can not format time\n");
         exit(1);
     }
