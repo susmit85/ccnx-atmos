@@ -17,6 +17,12 @@ if __name__ == "__main__":
 
     namespace = "/ndn/colostate.edu/netsec"
     
+    atmospath = os.getenv("ATMOS_PATH")
+
+    if not atmospath:
+        atmospath = os.path.dirname(sys.argv[0])
+
+    client = os.path.join(atmospath, 'client')
 
     start_date = raw_input("Start Date in YYYY/MM/DD? ")
     #start_date = "1902/01/15"
@@ -51,7 +57,7 @@ if __name__ == "__main__":
     year_end = int(year_end)
     
 
-    command = "rm *tmp*"
+    command = "rm -f *tmp*"
     f = os.popen(command)
 
     
@@ -64,7 +70,7 @@ if __name__ == "__main__":
             #print "./client " + namespace+filename  + tmp_filename+".tmp.nc"
             x = time.time()
             print "Asking for %s, Saving to %s.tmp.nc" %(filename, tmp_filename)      
-            command1 = subprocess.Popen(["./client", filename, tmp_filename+".tmp.nc"], stdout=subprocess.PIPE)
+            command1 = subprocess.Popen([client, filename, tmp_filename+".tmp.nc"], stdout=subprocess.PIPE)
             out, err = command1.communicate()
             print "Time for %s.tmp.nc %s= " %(tmp_filename, time.time() - x)
 
@@ -75,7 +81,7 @@ if __name__ == "__main__":
 
             x = time.time()
             print "Asking for %s, Saving to %s.tmp.nc" %(filename, tmp_filename)      
-            command1 = subprocess.Popen(["./client", filename, tmp_filename+".tmp.nc"], stdout=subprocess.PIPE)
+            command1 = subprocess.Popen([client, filename, tmp_filename+".tmp.nc"], stdout=subprocess.PIPE)
             out, err = command1.communicate()
             print "Time for %s.tmp.nc %s= " %(tmp_filename, time.time() - x)
     else:
@@ -88,7 +94,7 @@ if __name__ == "__main__":
 
             x = time.time()
             print "Asking for %s, Saving to %s.tmp.nc" %(filename, tmp_filename)      
-            command1 = subprocess.Popen(["./client", filename, tmp_filename+".tmp.nc"], stdout=subprocess.PIPE)
+            command1 = subprocess.Popen([client, filename, tmp_filename+".tmp.nc"], stdout=subprocess.PIPE)
             out, err = command1.communicate()
             print "Time for %s.tmp.nc %s= " %(tmp_filename, time.time() - x)
 

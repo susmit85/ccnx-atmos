@@ -7,6 +7,7 @@
 #include <limits.h>
 #include <fcntl.h>
 #include <sys/time.h>
+#include <libgen.h>
 
 #include <ccn/ccn.h>
 #include <ccn/uri.h>
@@ -41,6 +42,8 @@ struct data {
     char *message;
     const unsigned char *next_ccnb;
 };
+
+const char *atmos_path = NULL;
 
 int construct_trace_response(struct ccn *h, struct ccn_charbuf *data,
                              const unsigned char *interest_msg, const struct ccn_parsed_interest *pi, char *mymsg, size_t size, int is_final) {
@@ -224,7 +227,7 @@ enum ccn_upcall_res incoming_interest(struct ccn_closure *selfp,
 
             //invoke data extraction script
             gettimeofday(&start, NULL);
-            sprintf(command, "%s %s %s", "python script.py", filename, trunk_interest_name);
+            sprintf(command, "python %sscript.py %s %s", atmos_path, filename, trunk_interest_name);
             f = popen(command, "r");
             while (fgets(readbuf, 80, f) != NULL) {
                 readbuf[strlen(readbuf)-1] = '\0';
@@ -271,6 +274,22 @@ int main(int argc, char **argv) {
     if(argc != 2) {
         printf("Usage: ./server filename\n");
         exit(1);
+    }
+
+    atmos_path = getenv("ATMOS_PATH");
+    if (atmos_path == NULL) {
+        char *path = dirname(argv[0]), *newpath;
+        int len;
+        if (!strcmp(path, argv[0])) {
+            /* No directory information */
+            atmos_path = "";
+        }
+        /* Not a leak only because we only do it once! */
+        len = strlen(path) + 2;
+        newpath = malloc(len);
+        strncpy(newpath, path, len);
+        strncat(newpath, "/", len);
+        atmos_path = newpath;
     }
 
     int res;
